@@ -60,4 +60,41 @@ tags: []
 编译指明动态库名字位置
     $gcc -o tdl main.c ./dl.so
 ###动态库的显式调用
-    ....
+动态函数库的显式调用主要需要四个函数
++dlopen 打开动态库
++dlsym  获取动态库中对象基址
++dlerror 获取显式动态库操作中的错误信息
++doclose 关闭动态库
+
+    $cat main3.c
+    #include <dlfcn.h>
+    int main(void)
+    {
+        void *pHandle;
+        void (*pFunc()); //指向函数的指针
+        int *p;
+        pHandle = dlopen("./dl.so",RTLD_NOW); //打开动态库
+        if(!pHandle){
+            puts("can't find dl.so");
+            exit(1);
+        }
+        pFunc=(void (*)())dlsym(pHandle,"print");
+        if(pFunc)
+            pFunc();
+        else
+            puts("can't find function print");
+        p = (int *)dlsym(pHandle,"p");
+        if(p)
+            printf("p=%d\n",*p);
+        else
+            printf("Can;t find int p\n");
+        dlclose(Phandle);
+        return 0;
+        }
+
+        $gcc -o tds main3.c -ldl -L .
+        
+        
+##库依赖的查看
+使用ldd命令来查看执行文件依赖于那些库
+    $ldd [-vdr] filename 
