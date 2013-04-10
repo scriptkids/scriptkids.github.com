@@ -199,8 +199,53 @@ for
   展开命令，依次执行结果列表当中的命令。如果"in word"没有给出，那么for循环将会针对每个位置参数执行一次命令，具体内容参见特殊参数那一章。整个循环的返回值是最后一次迭代执行的命令的返回值，如果没能进入循环，返回值是0.
   for循环还支持另外一种格式，如下：
     for (( expr1 ; expr2 ; expr3 ; )) ; do commands ; done
+  首先，按照规定的规则执行算术表达式expr1.然后重复的执行表达式2直到返回值是0为止，每次expr2执行时如果返回值不是0,那么expr3执行一次。上述三个表达式中的任何一个都可以省略。整个循环的返回值由最后一个执行的命令的返回值决定。
+  break和continue是两个内建的可以用来控制循环的命令。
+#### 3.2.4.1 条件结构
+  if的语法结构如下：
+    if test-commands; then
+        consequent-commands;
+    [elif more-test-commands; then
+     more-consequents;]
+    [else alternate-consequents;]
+    fi
+  首先执行test-commands语句，如果返回值是0的话，执行consequent-commands,如果返回值不是0的话，依次执行接下来的elif语句，如果他的返回值是0的话，执行more-consequents语句。如果存在else alternate-consequnets的话，在所有的elif都没有匹配的情况下会执行alternate-consequents语句。整个if语句的返回值由最后执行的一个命令决定。如果没有进入任何条件语句，那么返回值是0
+  case的语法结构如下所示：
+    case word in [ [(] pattern [| pattern]...) command-list ;;]...esac
+  case会针对匹配的结果有选择性的执行command-list中的内容。如果shell打开了nocasemath选项的话，那么匹配会忽略大小写。"|"符号用来分开多个匹配模型，")"用来结束一个模型列表。一个模型列表和关联的命令列表被称作一个字句。
+  每个字句必须以";;", ";&", ";;&" 结尾。每个单词都在匹配之前尝试进行~波浪线拓展，参数拓展，命令替换，算术拓展和引用删除。每种模式都经过波浪线拓展，参数拓展，命令替换和算术拓展。
+  可以有任意多个以";;", ";&", ";;&"结尾的case语句。第一个匹配的命令执行。
+  下面是在一个脚本当中使用case的例子。它是用来描述一个动物的非常有趣的功能。
+    echo -n "Enter the name of an animal: "
+    read ANIMAL
+    echo -n "The $ANIMAL has "
+    case $ANIMAL in
+      horse | dog | cat) echo -n "four";;
+      man | kangaroo ) echo -n "two";;
+      *) echo -n "an unknown number of";;
+    esac
+    echo " legs."
+  如果使用";;"结尾的话，第一次匹配完成之后就不再继续进行匹配，如果使用";&"的话，会继续执行下一个case语句中的命令。如果使用";;&"的话，会继续测试下一个case语句中的条件，如果匹配的话，执行case语句中的命令。
+ 如果没有任何模型匹配成功，那么返回值是0。有模型匹配成功的话，返回值取决于最后一个执行的名利的返回值。
+ 
+  select结构是一种方便产生菜单的结构，它的语法类似与for命令:
+    select name [in words ...]; do commands; done
+  首先，在in后面的word会被展开，生成一个列表。这个列表会被打印到标准错误流。如果"in words"被省略，那么位置性参数会被打印。类似于"in $@"这种格式。这个时候会打印PS3规定的提示符，然后从标准输入中读取一行。如果读取的内容与展示的单词相符合的话，这个值会被富裕到这个单词。如果输入为空的话，这些单词和提示符被再次被打印。当读取到EOF的时候，select命令返回。如果读取到的值不能匹配的话，name变量将会被设置为空。读取到的值会被保存在REPLY变量中。
+  select区块的命令将会按照顺序执行，直到碰到了break命令，这个时候select命令退出。
+  下面是一个使用select的例子，可以让用户在当前文件夹中选择一个文件。并且输出用户选择的文件。
+    select fname in *;
+    do
+        echo you picked $fname \($REPLY\)
+        break;
+    done
   
-#### 3.2.4.1 判断结构
+  ((...)) (( expression )) 
+  这种结构的意义是根据下述规则求算术表达式的值。参见shell算术那个章节。如果expression的值不是0的话，那么这个表达式的返回值是0,否则返回值为1.这完全等同于let "expression"
+  关于let的用法参见bash内建命令章节。
+
+  [[...]]  [[ expression ]]
+  根据条件表达式的结果返回0或1.这里的表达式等同于bash条件表达式中所述的表达式。
+    
 #### 3.2.4.3 命令组
 ### 3.2.5 携程
 ### 3.2.6 GNU并行化
@@ -231,7 +276,7 @@ for
 
 
 
- 
+
 
 
 
