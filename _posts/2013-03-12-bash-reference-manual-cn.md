@@ -10,7 +10,7 @@ tags: []
 本文简要的描述了bash shell的简单功能.(版本4.2,2010年10月28日 )
 本文的版本号是4.2,最后更新于2010年10月28日. 是GNU Bash的参考手册.
 
-Bash不仅又许多常见的shell的功能,并且有许多独有的功能.bash像这些shell借鉴了许多概念,例如: Bourne Shell(sh), Korn Shell(ksh), C-Shell(csh).紧接着的菜单在分类上并没有按照从其他shell中借鉴的概念来分类.
+Bash不仅有许多常见的shell的功能,并且有许多独有的功能.bash向Bourne Shell(sh), Korn Shell(ksh), C-Shell(csh)这些shell中借鉴了许多概念.紧接着的菜单在分类上并没有按照从其他shell中借鉴的概念来分类.
 
 本手册旨在简单介绍Bash的一些简单功能. 这份手册应当作为决定shell行为的参考手册.
 
@@ -35,55 +35,83 @@ Bash不仅又许多常见的shell的功能,并且有许多独有的功能.bash�
 [什么是Bash?]()          Bash的简短介绍.  
 [什么是Shell?]()         shells的简要介绍.  
 ###1.1 什么是Bash?
-Bash是GNU操作系统的一个shell程序或命令行解释器.它的名字来源于"Bourne_Again SHell"的首字母缩写.是Stephen Bourne的双关语,作者直接采用了当前Unix shell的sh,出现在第七版贝尔实验室研究版本的Unix.
+  Bash是GNU操作系统的一个shell程序或者叫做命令行解释器.它的名字来源于"Bourne_Again SHell"的首字母缩写.这是一个双关语,作者Stephen Bourne也是当前Unix shell的sh的作者,出现在第七版贝尔实验室研究版本的Unix.
 
-Bash恩大程度上能和sh兼容.并且从Korn shell 和C shell当中学到了一些有用的功能.它的目的就是为了实现一个符合IEEE POSIX规范的shell,并且成为了IEEE POSIX规范的一部分.它在交互性和编程方面提供了功能上的提高.
+  Bash很大程度上能和sh兼容.并且从Korn shell 和C shell当中学到了一些有用的功能.它的目的就是为了实现一个符合IEEE POSIX规范的shell,并且成为了IEEE POSIX规范的一部分.它在交互性和编程方面提供了功能上的进步.
 
-虽然GNU操作系统提供了其他的shell,例如csh,但是Bash是默认的shell.跟其他Gnu软件一样,Bash非常便于移植.目前可以运行在几乎所有版本的Unix系统和一些其他的操作系统.还有一些独立移植的版本支持MS-DOS,OS/2,Windows. 
+  虽然GNU操作系统提供了其他的shell,例如csh,但是Bash是大部分情况下默认的shell.跟其他GNU软件一样,Bash非常便于移植.目前可以运行在几乎所有版本的Unix系统和一些其他的操作系统.还有一些独立移植的版本支持MS-DOS,OS/2,Windows. 
 
 ###1.2 shell是什么?
+  简单来讲，shell是一个简易的可以执行命令的宏处理器，宏处理器的意思是可以讲文本和符号进行拓展开组成更大的表达式的处理工具。
+  一个Unix的shell不仅是一个命令行解释器同时也使一个编程语言。作为一个命令行解释器来讲，shell作为一个方便用户使用GNU工具包的接口。作为编程语言使用时，shell可以让这些工具组合起来。可以创建一个包含一些命令的文件，这个文件就成为了一个新的命令。这个新的命令和系统的命令具有相同的地位，例如在/bin文件夹下的一些命令。允许用户自己创建运行环境来自动完成他们的任务。
+  shell可以被交互的使用，也可以被非交互的使用，在交互模式下，它从键盘接收输入，当处于非交互模式时，shell从一个文件中读取输入。
+  shell允许同步或者异步的执行GNU命令，shell将会等待同步命令结束才会接收新的输入;异步的命令在shell读取其他命令时，继续执行正在执行的命令。重定向结构允许细粒度的命令的输入和输出。更多的是，shell允许用户控制命令执行的环境。
+  shell还提供的有一些内建命令，实现那些通过独立程序不方便或者不可恩的功能。例如： cd, break, continue, exec就不能在shell之外实现，因为它们需要直接内置在shell中。而history, getopts, kill, pwd等内建命令，就可以在单独的包中进行实现。但是如果内建这些命令的话更加锋边，所有的shell内置命令在随后的章节中都会介绍。
+  执行命令是shell的基本功能，shell的大部分功能和复杂性都来自与shell作为一个编程语言来用。类似与高级编程语言，shell提供了变量，流程控制，引用和函数。
+  shell相比编程语言还提供了更多交互性的功能。这些交互行的功能包括任务控制，命令行编辑，历史命令，命令行替换，每个功能在这份手册中都有介绍。 
 
 
 ##2. 定义
 这些定义在整个剩下的手册中被用到.
 #### POSIX
+    一系列Unix下的系统标准。关于Bash的内容主要在shell和工具那一部分位于POSIX 1003.1标准。
 #### blank
-builtin
-control operator
-exit status 
-field
-filename 
-job
-job control
-metacharacter
-name
-operator
-process group
-process group ID
-return status 
-signal
-special builtin
-token
-word
+    空格或者制表符
+#### builtin
+    shell内置的一些命令。相对于系统中的一些可执行文件而言，这些命令是shell内置的。
+#### control operator
+    一个执行控制功能的标记。可以是换行符或者如下所示的符号，"||", "&&", "&", ";", ";;", "|", "|&", "(", ")".
+#### exit status 
+    返回值，是一个数值，由命令返回给自己的调用者。这个值是8位的，所以最大值是255.
+#### field
+    字段，这是一个文本的单位，这个文本是shell拓展之后的结果。执行命令时，结果段通常被用作命令名和参数。
+#### filename 
+    文件名，一个字符串用来标记一个文件。
+#### job
+    一组操作和管道，任何由它们所产生的进程，都在一个进程组中。
+#### job control
+    工作控制，一个可以让用户有选择性的停止和重启正在执行的进程。
+#### metacharacter
+    元字符，元字符是这样的字符，当它没有用引号括起来的时候，用来分隔单词，元字符是空格和"|", "&", ";", "(", ")", "<", ">".
+#### name
+    由字母，数字或下划线组成的一个单词，并且以字母或下划线开头。name通常被用作shell变量和函数名。也称作为一个标识符
+#### operator
+    控制字符或者重定向字符，控制字符至少包含一个不带引号的分隔符。
+#### process group
+    进程组，有着相同的进程组ID的进程。
+#### process group ID
+    一个唯一的标识符在一个进程组的生命周期用来标识一个进程组。
+#### reserved word
+    保留字，在shell当中具有特殊含义的单词，大部分保留字是用来作为shell的流程控制结构，例如for和while。
+#### return status 
+    退出状态，和exit status一个意思。
+#### signal
+    一种可以让内核发送通知给操作的机制。
+#### special builtin
+    shell中的内建命令，被声明与POSIX标准有所不同的内建命令。
+#### token
+    一组连续的字符，被shell当作一个整体，可以是一个单词或者一个操作符。
+#### word
+    一组连续的字符，被shell当作一个整体来看待，单词不包括未被引号括起来的分隔符。
 
 ##3.基本shell功能
 Bash是"Bourne-Again SHell"的缩写.Bourne Shell是传统Unix系统上默认的shell,是由Stephen Bourne编写的.Bourne shell中所有的内建命令在Bash当中都是可用的.这些引用和求值的规则是遵守POSIX协议并且成为了标准版的Unix shell程序.
 
 这个章节将单总结了shell中的方方面面,命令,控制结构,shell函数,shell参数,重定向,一种将输入和输出定向到一个命名文件中的方法,还包括shell命令是如何执行的.
 
-- shell语法
-- shell命令
-- shell函数
-- shell参数
-- shell拓展
-- 重定向
-- 执行命令
-- shell脚本
+- shell语法   你输入的内容对shell来说意味着什么。
+- shell命令   你可以用什么样的命令。
+- shell函数   用名字来构成命令组。
+- shell参数   shell是如何存储值的。
+- shell拓展   shell如何展开参数的。
+- 重定向      一个控制输入和输出的办法。
+- 执行命令    当你执行一个命令的时候发生了什么？
+- shell脚本   像执行shell命令一样，执行一个文件。
 
 ###3.1 shell语法
-- [shell操作]
-- [引用]
-- [注释]
+- [shell操作]    shell的基本操作。
+- [引用]         如何给字符转义。
+- [注释]        如何写注释。
 
 当shell从输入中读取数据时,shell是按照如下顺序来处理输入.如果输入该行被注释,shell会忽略这个注释符号("#"),并且忽略这一行.
 
@@ -102,7 +130,7 @@ shell将这些符号转化成为命令和其他的结构,移除特定单词的�
 7. 等待命令执行完毕,并收集退出状态.
 
 ####3.1.2 引用
-- [转义字符]
+- [转义字符]  
 - [单引号]
 - [双引号]
 - [ANSI-C引用]
