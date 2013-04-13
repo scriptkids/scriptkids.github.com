@@ -1,0 +1,388 @@
+<hr />
+
+<p>layout: post
+title: "Bash Reference Manual cn"
+description: ""
+category: </p>
+
+<h2>tags: []</h2>
+
+<p>{% include JB/setup %}</p>
+
+<h2>bash 功能.</h2>
+
+<p>本文简要的描述了bash shell的简单功能.(版本4.2,2010年10月28日 )
+本文的版本号是4.2,最后更新于2010年10月28日. 是GNU Bash的参考手册.</p>
+
+<p>Bash不仅又许多常见的shell的功能,并且有许多独有的功能.bash像这些shell借鉴了许多概念,例如: Bourne Shell(sh), Korn Shell(ksh), C-Shell(csh).紧接着的菜单在分类上并没有按照从其他shell中借鉴的概念来分类.</p>
+
+<p>本手册旨在简单介绍Bash的一些简单功能. 这份手册应当作为决定shell行为的参考手册.</p>
+
+<ul>
+<li>介绍                                shell的简单介绍         </li>
+<li>定义                                一些用于本手册的概念.</li>
+<li>基本shell功能                       构成shell的方方面面.</li>
+<li>shell内建命令                       shell内建的命令</li>
+<li>shell变量                           Bash用到的变量</li>
+<li>Bash功能                            只在Bash中用有的功能</li>
+<li>任务控制                            任务控制的简单介绍和用法.</li>
+<li>命令行编辑                          介绍命令行编辑的功能.</li>
+<li>交互的使用历史命令                  history命令的一些用法展开.</li>
+<li>安装Bash                            如何编译安装Bash</li>
+<li>报告缺陷                            如何回报Bash的bug.</li>
+<li>Bash与Bourne Shell的主要区别        bash和Bourne Shell的区别列表 </li>
+<li>GNU免费文档协议                     复制并分享这份文档.</li>
+<li>索引                                文档的索引</li>
+</ul>
+
+<h2>1.介绍</h2>
+
+<p><a href="">什么是Bash?</a>          Bash的简短介绍. <br />
+<a href="">什么是Shell?</a>         shells的简要介绍.  </p>
+
+<h3>1.1 什么是Bash?</h3>
+
+<p>Bash是GNU操作系统的一个shell程序或命令行解释器.它的名字来源于"Bourne_Again SHell"的首字母缩写.是Stephen Bourne的双关语,作者直接采用了当前Unix shell的sh,出现在第七版贝尔实验室研究版本的Unix.</p>
+
+<p>Bash恩大程度上能和sh兼容.并且从Korn shell 和C shell当中学到了一些有用的功能.它的目的就是为了实现一个符合IEEE POSIX规范的shell,并且成为了IEEE POSIX规范的一部分.它在交互性和编程方面提供了功能上的提高.</p>
+
+<p>虽然GNU操作系统提供了其他的shell,例如csh,但是Bash是默认的shell.跟其他Gnu软件一样,Bash非常便于移植.目前可以运行在几乎所有版本的Unix系统和一些其他的操作系统.还有一些独立移植的版本支持MS-DOS,OS/2,Windows. </p>
+
+<h3>1.2 shell是什么?</h3>
+
+<h2>2. 定义</h2>
+
+<p>这些定义在整个剩下的手册中被用到.</p>
+
+<h4>POSIX</h4>
+
+<h4>blank</h4>
+
+<p>builtin
+control operator
+exit status 
+field
+filename 
+job
+job control
+metacharacter
+name
+operator
+process group
+process group ID
+return status 
+signal
+special builtin
+token
+word</p>
+
+<h2>3.基本shell功能</h2>
+
+<p>Bash是"Bourne-Again SHell"的缩写.Bourne Shell是传统Unix系统上默认的shell,是由Stephen Bourne编写的.Bourne shell中所有的内建命令在Bash当中都是可用的.这些引用和求值的规则是遵守POSIX协议并且成为了标准版的Unix shell程序.</p>
+
+<p>这个章节将单总结了shell中的方方面面,命令,控制结构,shell函数,shell参数,重定向,一种将输入和输出定向到一个命名文件中的方法,还包括shell命令是如何执行的.</p>
+
+<ul>
+<li>shell语法</li>
+<li>shell命令</li>
+<li>shell函数</li>
+<li>shell参数</li>
+<li>shell拓展</li>
+<li>重定向</li>
+<li>执行命令</li>
+<li>shell脚本</li>
+</ul>
+
+<h3>3.1 shell语法</h3>
+
+<ul>
+<li>[shell操作]</li>
+<li>[引用]</li>
+<li>[注释]</li>
+</ul>
+
+<p>当shell从输入中读取数据时,shell是按照如下顺序来处理输入.如果输入该行被注释,shell会忽略这个注释符号("#"),并且忽略这一行.</p>
+
+<p>然后,简单的讲,shell读取输入,并且讲输入分为单词和操作符.按照引用的规则来选择一些特殊符号的意思.</p>
+
+<p>shell将这些符号转化成为命令和其他的结构,移除特定单词的特定含义.如果需要的话,重定向输入输出流.执行特定的命令,等待命令的退出状态,让退出状态可用,以便后面的操作对其进行检验和一些特殊的处理.</p>
+
+<h4>3.1.1 shell操作</h4>
+
+<p>以下内容简洁的描述了当shell读取和执行一个命令时的操作.基本上,shell按照如下的顺序进行操作.
+1. 使用-c参数从文件中读取输入,或者直接从用户的终端读取输入.
+2. 将输入转化成为单词和操作符.按照在引用那一章节所描述的规则.这些语法符号使用元字符隔开.Alias展开就是在这个阶段进行的.
+3. 将语法符号转化成为简单的复合命令.
+4. 执行shell展开,将可展开的符号展开成了文件名列表,命令和参数.
+5. 执行必要的重定向,从操作符中移除重定向命令.
+6. 执行命令.
+7. 等待命令执行完毕,并收集退出状态.</p>
+
+<h4>3.1.2 引用</h4>
+
+<ul>
+<li>[转义字符]</li>
+<li>[单引号]</li>
+<li>[双引号]</li>
+<li>[ANSI-C引用]</li>
+<li>[本地化]
+转义是用来移除特定字符或者单词的含义.引用可以防止一些特殊的单词被处理.以便于你使用保留字.</li>
+</ul>
+
+<p>每个元字符都有自己的特定含义,如果你想使用它本身的含义,可以使用引用.当你使用"!"的时候,必须引用它,防止它被当作历史展开符号使用.详情可以操作历史命令那个章节.</p>
+
+<p>有三种引用机制,转义字符,单引号,双引号.</p>
+
+<h4>3.1.2.1转义字符</h4>
+
+<p>没有被引用的反斜杠是转义字符,它防止紧跟着它的字符被转义.当你使用\newline时,bash会继续这一行.</p>
+
+<h4>3.1.2.2单引号引用</h4>
+
+<p>使用单引号引用的内容,每个字符保持了字面值.单引号之内不能出现单引号,即时被反斜杠转义的时候.</p>
+
+<h4>3.1.2.3 双引号</h4>
+
+<p>被双引号引用的值保留了本身的字面值.除了'$',"'",'\','!' 这些符号."$"和"'"符号在双引号中保留了他们的特殊含义.反斜杠"\"保留了本身的特殊含义,仅当反斜杠后面跟的是"$", "'",'"',"\"这些符号或者换行符.双引号内可以有被反斜杠转义的双引号.
+而这两个"@","*"特殊的参数在双引号中依然保持了他们的特有含义.</p>
+
+<h4>3.1.2.4 ANSI-C 引用</h4>
+
+<h4>3.1.2.5 本地化</h4>
+
+<h3>3.1.3 注释</h3>
+
+<p>在非交互性shell中,"#"注释符号和该行其后的内容都会被忽视.具体内容可以参考shell的交互性这一章.该章节简单介绍了shell的交互性.</p>
+
+<h2>3.2 shell命令</h2>
+
+<p>一个简单的命令例如:echo a b c包含了命令本身和一些由空格隔开的参数.</p>
+
+<p>很多的复杂的shell命令是由简单的shell命令组合到一起儿形成的.在一个管道中一个命令的输出成为下一个命令的输入.
+- [简单命令]     最常见的一些命令
+- [管道]         连接命令间的输入和输出.
+- [列表]         如何串行化执行命令
+- [组合命令]     shell命令的控制流程
+- [携程]       另一种命令之间交互的方式
+- [GNU并行化]    并行运行命令的方法</p>
+
+<h3>3.2.1 简单命令</h3>
+
+<p>简单命令是最常用的命令,它仅仅是一些用空格隔开的单词,用shell的控制字符控制的操作.通常情况下,第一个单词是要执行的命令,后面跟着的是命令的参数. 
+返回值表明了一个命令的返回状态.这个状态是由POSIX规范规定的.</p>
+
+<h3>3.2.2 管道</h3>
+
+<p>管道是一系列由|或者|&amp;隔开的操作.
+一个管道的格式是:
+    command1 [[| or |&amp;] command2]
+每个命令的输出都通过一个管道来成为下个命令的输入. 这就是说,每个命令从上一个命令的输出中读取输入.
+如果使用|&amp;这个命令,标准错误流也会通过被管道输出.这比使用2>&amp;1 |要短. 这种隐式的方法应该位于所有的重定向类型后面. </p>
+
+<p>使用保留字time可在管道完成的时候打印时间统计信息.它将会打印出执行命令时在用户态和内核态分别使用的时间.使用-p参数可以使输出格式按照POSIX规范来打印.当shell处于POSIX模式时,如果time前又"-"前缀,那么shell将并不把time作为保留字.可能需要设置ITMEFORMAT环境变量来规定时间信息的展示格式. time保留字可以方便的统计shell内置命令,shell函数,管道的时间信息.一个单独的time命令并不能很方便的获取这些信息.</p>
+
+<p>当shell处于POSIX模式时,time后可能紧跟一个换行符.在这种情况下,shell将会展示出shell和子shell所使用的用户态时间和内核态时间的总时间.这时候使用TIMEFORMAT变量来限定时间显示的格式.</p>
+
+<p>如果管道中的内容不是异步执行的话,shell将会等待管道中的所有命令结束之后才算完成.</p>
+
+<p>在管道中的每个命令执行的时候都是在自己的子shell中执行的.管道的返回值是由管道中的最后一个命令决定的,除非pipefail这个选项被打开.在pipefail打开的情况下,管道的返回值是管道中最后一个以非0值返回的命令来决定的.如果管道由!保留字修饰的话,那么shell的返回值规则刚好和上述的相反.shell将会等待管道中所有的命令直到管道返回值可用.</p>
+
+<h3>3.2.3 命令列表</h3>
+
+<p>列表是一个连续的序列，这个序列由一个或者多个由";","&amp;","&amp;&amp;","||"分隔符分开的管道组成。
+  在这些操作符中,"&amp;&amp;"和"||"拥有相同的优先级，其次是";"和"&amp;"。
+  一个列表中可能会出现一个或这更多的换行符来分隔命令，相当于一个分号。
+  如果一个命令被"&amp;"操作符终止，那么shell将会在一个子shell中异步的执行这个命令。这被称作为在后台运行命令。这个时候shell并不等待命令结束并返回返回值。当任务管理被激活的时候，一个异步命令的标准输入如果没有任何显式的重定向的话，将会被重定向到/dev/null。
+  被";"分隔开的命令是串行执行的;shell将会依次等待各个命令执行完毕。整个序列的返回值是最后一个命令的返回值。
+  AND和OR 列表是一个由&amp;&amp;或者||分隔的序列，AND和OR列表的执行具有左结合性。
+  一个AND结构的列表如下：
+    command1 &amp;&amp; command2
+  当且仅当command1的返回值是0的时候，command2才会执行。
+  一个OR结构的列表如下：
+    command1 || command2
+  当且仅当command1的返回值是非0的时候，command2才会执行。
+  整个AND或者OR列表的返回值是列表当中最后一个执行的命令的返回值。</p>
+
+<h3>3.2.4 复合命令</h3>
+
+<ul>
+<li>循环结构： 迭代行为的shell命令</li>
+<li>条件结构： 条件的shell命令</li>
+<li>命令组：   一个构成一组命令的方法
+复合命令是shell编程中的一种结构，每个结构都由一个保留字或控制字符开始，并以相应的保留字和控制字符结束。复合命令的重定向作用到命令组当中的所有命令中，除非该命令显式的声明重定向。
+Bash提供了循环结构，条件结构，还有一种让命令构成命令组来执行的结构。
+<h4>3.2.4.1 循环结构</h4></li>
+</ul>
+
+<p>Bash支持如下所示的循环结构。
+注意在指令中出现";"的时候，";"可能会被一个或几个换行符替换。
+until
+  until循环的格式是：
+    until test-commands; do consequent-commands; done
+  当test-commands的返回值是0的时候退出循环。整个循环的返回值是consequent-commadns最后一次迭代的返回值，如果未进入循环，返回值是0。</p>
+
+<p>while
+  while循环的格式是：
+    while test-commands; do consequent-commands; done
+  当test-commands的返回值是0的时候跳出循环，整个循环的返回值是consequent-commadn最后一次迭代的返回值，如果未进入循环，返回值是0.</p>
+
+<p>for
+  for循环的格式如下：</p>
+
+<pre><code>for name [ [in [words ...] ] ; ] do commands; done
+</code></pre>
+
+<p>展开命令，依次执行结果列表当中的命令。如果"in word"没有给出，那么for循环将会针对每个位置参数执行一次命令，具体内容参见特殊参数那一章。整个循环的返回值是最后一次迭代执行的命令的返回值，如果没能进入循环，返回值是0.
+  for循环还支持另外一种格式，如下：</p>
+
+<pre><code>for (( expr1 ; expr2 ; expr3 ; )) ; do commands ; done
+</code></pre>
+
+<p>首先，按照规定的规则执行算术表达式expr1.然后重复的执行表达式2直到返回值是0为止，每次expr2执行时如果返回值不是0,那么expr3执行一次。上述三个表达式中的任何一个都可以省略。整个循环的返回值由最后一个执行的命令的返回值决定。
+  break和continue是两个内建的可以用来控制循环的命令。</p>
+
+<h4>3.2.4.1 条件结构</h4>
+
+<p>if的语法结构如下：</p>
+
+<pre><code>if test-commands; then
+    consequent-commands;
+[elif more-test-commands; then
+ more-consequents;]
+[else alternate-consequents;]
+fi
+</code></pre>
+
+<p>首先执行test-commands语句，如果返回值是0的话，执行consequent-commands,如果返回值不是0的话，依次执行接下来的elif语句，如果他的返回值是0的话，执行more-consequents语句。如果存在else alternate-consequnets的话，在所有的elif都没有匹配的情况下会执行alternate-consequents语句。整个if语句的返回值由最后执行的一个命令决定。如果没有进入任何条件语句，那么返回值是0
+  case的语法结构如下所示：</p>
+
+<pre><code>case word in [ [(] pattern [| pattern]...) command-list ;;]...esac
+</code></pre>
+
+<p>case会针对匹配的结果有选择性的执行command-list中的内容。如果shell打开了nocasemath选项的话，那么匹配会忽略大小写。"|"符号用来分开多个匹配模型，")"用来结束一个模型列表。一个模型列表和关联的命令列表被称作一个字句。
+  每个字句必须以";;", ";&amp;", ";;&amp;" 结尾。每个单词都在匹配之前尝试进行~波浪线拓展，参数拓展，命令替换，算术拓展和引用删除。每种模式都经过波浪线拓展，参数拓展，命令替换和算术拓展。
+  可以有任意多个以";;", ";&amp;", ";;&amp;"结尾的case语句。第一个匹配的命令执行。
+  下面是在一个脚本当中使用case的例子。它是用来描述一个动物的非常有趣的功能。</p>
+
+<pre><code>echo -n "Enter the name of an animal: "
+read ANIMAL
+echo -n "The $ANIMAL has "
+case $ANIMAL in
+  horse | dog | cat) echo -n "four";;
+  man | kangaroo ) echo -n "two";;
+  *) echo -n "an unknown number of";;
+esac
+echo " legs."
+</code></pre>
+
+<p>如果使用";;"结尾的话，第一次匹配完成之后就不再继续进行匹配，如果使用";&amp;"的话，会继续执行下一个case语句中的命令。如果使用";;&amp;"的话，会继续测试下一个case语句中的条件，如果匹配的话，执行case语句中的命令。
+ 如果没有任何模型匹配成功，那么返回值是0。有模型匹配成功的话，返回值取决于最后一个执行的名利的返回值。</p>
+
+<p>select结构是一种方便产生菜单的结构，它的语法类似与for命令:</p>
+
+<pre><code>select name [in words ...]; do commands; done
+</code></pre>
+
+<p>首先，在in后面的word会被展开，生成一个列表。这个列表会被打印到标准错误流。如果"in words"被省略，那么位置性参数会被打印。类似于"in $@"这种格式。这个时候会打印PS3规定的提示符，然后从标准输入中读取一行。如果读取的内容与展示的单词相符合的话，这个值会被富裕到这个单词。如果输入为空的话，这些单词和提示符被再次被打印。当读取到EOF的时候，select命令返回。如果读取到的值不能匹配的话，name变量将会被设置为空。读取到的值会被保存在REPLY变量中。
+  select区块的命令将会按照顺序执行，直到碰到了break命令，这个时候select命令退出。
+  下面是一个使用select的例子，可以让用户在当前文件夹中选择一个文件。并且输出用户选择的文件。</p>
+
+<pre><code>select fname in *;
+do
+    echo you picked $fname \($REPLY\)
+    break;
+done
+</code></pre>
+
+<p>((...)) (( expression )) 
+  这种结构的意义是根据下述规则求算术表达式的值。参见shell算术那个章节。如果expression的值不是0的话，那么这个表达式的返回值是0,否则返回值为1.这完全等同于let "expression"
+  关于let的用法参见bash内建命令章节。</p>
+
+<p>[[...]]  [[ expression ]]
+  根据条件表达式的结果返回0或1.这里的表达式等同于bash条件表达式中所述的表达式。在被"[["和"]]"包裹的内容不会执行文件名展开。但是会执行波浪线拓展，参数和变量拓展，算术拓展，命令替换和引用删除。如果当中出现条件运算符，例如"-f"那么它必须用引号括起来。
+  在[[ ]] 之中，进行大小判断的时候，会根据本地的语言设置进行变化。
+  当进行相等判断时，等号右边的操作数会被看作是一个等待匹配的模式，匹配的规则请参考模式匹配那个章节。如果bash设置了不区分大小写的比较则进行判断时不区分大小写。相等的情况下返回0,不相等的情况下返回1.进行非等判断时情况刚好相反。
+  还有一个判断符号是"=~".使用这个符号的时候，右边的表达式会被按照拓展的正则表达式进行匹配。如果匹配成功返回值是0,匹配失败返回值是1.如果这个正则表达式格式错误的话，返回值是2.如果shell打开了nocasematch开关的话，匹配时会忽略大小写。这个匹配模型的任何部分都可以用引号括起来，被括起来的部分将会被当做一个字符串来匹配。在正则表达式中括号的字表达式匹配的字串被保存在BASH<em>REMATH环境变量中。在BASH</em>REMATH环境变量中，索引为0的元素是整个正则表达式中匹配成功的部分。在BASH_REMATH中索引为n的元素就是第n个匹配的字符串。
+  表达式可以和以下操作符合并成为一个表达式，下面以优先级顺序列出了一些操作符。
+  ( expression )
+  返回expression的值，这用来覆盖正常优先级的操作。
+  ! expression
+  返回expression的否值。
+  expression1 &amp;&amp; expression2 
+  当它们同时为真的时候返回真
+  expression1 || expression2 
+  当它俩任何一个为真的时候返回真
+  &amp;&amp; 和||操作符的情况下会使用短路操作来减少不必要的计算。   </p>
+
+<h4>3.2.4.3 命令组</h4>
+
+<p>Bash提供了两种让命令成组执行的办法。在构成命令组的情况下，重定向可以被覆盖到整个命令列表。例如：列表中所有的命令的输出可能会被重定向到一个单一的流中。
+  () (list) 使用小括号来组成命令组，这种情况下bash会在一个子shell中执行list的命令。正因为采用了子shell运行命令的方法，子shell运行结束后，子shell中的赋值操作并不会生效。
+  {} {list;} 使用花括号来组成命令组，这种情况下，bash还是在当前的shell中执行命令。不会新创建子shell。注意：list后的分号是不能缺少的，但可以使用换行符来代替它。这种情况下，shell上下文环境有可能改变。
+  除了是否创建一个子shell外，由于历史原因，这两种方法还有是些许不同。由于花括号是保留字，所以它必须用空格或者其他符号与列表分开。而小括号是操作符，所以即使没有与列表分开shell也能识别。
+  这两个结构的返回值都取决于list的返回值。</p>
+
+<h3>3.2.5 协程</h3>
+
+<p>shell中的协程指的就是使用coproc命令来处理的一个过程。一个协程是在一个子shell中异步的执行。就像是在命令的后面缀上一个"&amp;"一样，并且会在协程的子shell和当前shell中创建一个双向管道。
+  使用协程的格式如下：</p>
+
+<pre><code>coproc [NAME] command [redirections]
+</code></pre>
+
+<p>这样就创建了一个叫做NAME的协程。如果NAME为空的话，默认的名字是COPROC。当你想要执行的命令比较简单时，可以不用设置NAME，这一部分可以参考简单命令那个章节。否则的话，NAME会被解释为简单命令的第一个单词。
+  当协程被创建成功后，shell创建一个叫做NAME数组变量。命令的标准输出通过管道被连接到正在执行的shell的一个文件描述符中，这个文件描述符被分配到NAME[0].标准输入流被分配到正在执行的shell的一个文件描述符，被分配到NAME[1].这个管道在所有的重定向生效之前就建立了。这些文件描述符何以作为shell命令的参数。
+  所创建的协程的进程ID会被保存在NAME_PID比阿里旺旺么中。可以使用内建的命令wait来等待协程终止。
+  协程的返回值是协程中执行的最后一个命令的返回值。</p>
+
+<h3>3.2.6 GNU并行</h3>
+
+<p>GNU并行，就像名字说的一样，它是用来并行化运行命令的一个工具。你可以用不同的参数来运行同一个命令，这些参数可以是文件名，用户名，主机名，或者是从文件中读取的内容。
+  如果想要详细了解GNU并行，可以参考它的文档。下面提供一些简介的例子来介绍如何让使用GNU并行。
+  例如，可以非常方便的在一个text文件的每行前面加上一个特定的字符串：
+    cat file | parallel -k echo prefix<em>string
+  -k参数是用来保持每一行的顺序的。
+  同理，你可以在一个text文件的每一行的末尾添加一个特定的字符串
+    cat file | parallel -k echo {} append</em>string
+  如果当前文件夹中的文件太多的话，可以使用parallel来把当前文件夹中的文件移动到另外一个文件夹中。通过使用mv调用。
+    ls | parallel mv {} destdir
+  正如你看到的那样，{}会被替换成标准输入中的每一行。这将会产生与当前文件夹中文件数目相同的mv命令。可以使用-X选项来模拟一个并行化的xargs。
+    ls | parallel -X mv {} destdir
+  GNU并行化可以取代一些常用的操作。例如从文件中操作行。</p>
+
+<pre><code>for x in $(cat list); do
+    do-something1 $x config-$x
+    do-something2 &lt; $x
+done | process-output
+</code></pre>
+
+<p>用一个更加紧凑的lambda表达式替代它。</p>
+
+<pre><code>cat list | parallel "do-something1 {} config-{} ; do-something2 &lt; {}" | process-output
+</code></pre>
+
+<p>并行提供了一个内建的机制来删除文件的拓展名。这使它可以被用来批量的转换和重命名文件。</p>
+
+<pre><code>ls *.gz | parallel -j+0 "zcat {}  | bzip2 &gt;{.}.bz2 &amp;&amp; rm {} "
+</code></pre>
+
+<p>这个命令是用bzip2重新压缩当前文件夹中的.gz文件，并行的在每个cpu上运行一个任务。
+  如果命令产生输出的话，有时可能会希望输出保持输入的顺序。例如，如下所示的命令</p>
+
+<pre><code>{ echo foss.org.my ; echo debian.org; echo freenetproject.org; } | parallel tracerote
+</code></pre>
+
+<p>这条命令将会首先输出第一个完成的traceroute命令的输出。使用-k传参数，正如我们所示，命令变成了：</p>
+
+<pre><code>{ echo foss.org.my ; echo debian.org; echo freenetproject.org; } | parallel -k traceroute
+</code></pre>
+
+<p>这样将会确保traceroute foss.org.my的输出先被展示。</p>
+
+<h2>3.3 shell函数</h2>
+
+<h2>3.4 shell参数</h2>
+
+<h3>3.4.1位置殘素</h3>
+
+<h3>3.4.2特殊参数</h3>
